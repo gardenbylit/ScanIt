@@ -10,6 +10,7 @@ import {
   ScrollView,
   SafeAreaView,
   Dimensions,
+  Image,
 } from 'react-native';
 import { RNCamera } from 'react-native-camera';
 import { Ionicons } from '@expo/vector-icons';
@@ -26,9 +27,8 @@ const ScannerScreen = ({ navigation }) => {
   const [flashMode, setFlashMode] = useState(RNCamera.Constants.FlashMode.off);
   const [scannedData, setScannedData] = useState(null);
   const [showPreview, setShowPreview] = useState(false);
-  const [scanCount, setScanCount] = useState(0);
 
-  const { canScan, recordNewScan, scanUsage, user } = useSubscription();
+  const { canScan, recordNewScan, scanUsage } = useSubscription();
   const { addContact } = useContacts();
 
   useEffect(() => {
@@ -54,7 +54,7 @@ const ScannerScreen = ({ navigation }) => {
     if (!canScan()) {
       Alert.alert(
         'Scan Limit Reached',
-        `You've reached your monthly scan limit (${scanUsage.limit}).\nUpgrade to Pro or Super VIP for unlimited scans.`,
+        `You've reached your monthly scan limit (${scanUsage?.limit}).\nUpgrade to Pro or Super VIP for unlimited scans.`,
         [
           { text: 'Cancel', style: 'cancel' },
           {
@@ -77,7 +77,7 @@ const ScannerScreen = ({ navigation }) => {
       };
 
       const data = await cameraRef.current.takePictureAsync(options);
-      
+
       // Simulate OCR processing
       const extractedData = await processBusinessCard(data);
       setScannedData(extractedData);
@@ -96,7 +96,7 @@ const ScannerScreen = ({ navigation }) => {
   const processBusinessCard = async (imageData) => {
     // Simulate OCR text extraction
     // In production, integrate with Google ML Kit or Azure Computer Vision
-    return new Promise(resolve => {
+    return new Promise((resolve) => {
       setTimeout(() => {
         resolve({
           firstName: 'John',
@@ -118,7 +118,7 @@ const ScannerScreen = ({ navigation }) => {
     try {
       setLoading(true);
       await addContact(scannedData);
-      
+
       Alert.alert('Success', 'Contact saved successfully!', [
         {
           text: 'OK',
@@ -174,7 +174,7 @@ const ScannerScreen = ({ navigation }) => {
 
           <View style={styles.scanCounter}>
             <Text style={styles.scanCounterText}>
-              {scanUsage?.used}/{scanUsage?.limit || '∞'}
+              {scanUsage?.used || 0}/{scanUsage?.limit || '∞'}
             </Text>
           </View>
 
@@ -189,7 +189,11 @@ const ScannerScreen = ({ navigation }) => {
             }
           >
             <Ionicons
-              name={flashMode === RNCamera.Constants.FlashMode.on ? 'flash' : 'flash-off'}
+              name={
+                flashMode === RNCamera.Constants.FlashMode.on
+                  ? 'flash'
+                  : 'flash-off'
+              }
               size={28}
               color={colors.white}
             />
@@ -313,7 +317,11 @@ const ScannerScreen = ({ navigation }) => {
                   <ActivityIndicator color={colors.white} />
                 ) : (
                   <>
-                    <Ionicons name="checkmark" size={20} color={colors.white} />
+                    <Ionicons
+                      name="checkmark"
+                      size={20}
+                      color={colors.white}
+                    />
                     <Text style={styles.saveButtonText}>Save Contact</Text>
                   </>
                 )}
@@ -339,7 +347,7 @@ const PreviewField = ({ icon, label, value }) => (
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.black || '#000',
+    backgroundColor: '#000',
   },
   camera: {
     flex: 1,
