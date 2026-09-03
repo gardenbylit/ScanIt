@@ -1,0 +1,2 @@
+// Using Kotlin DSL
+implementation("com.google.firebase:firebase-appcheck-playintegrity")
